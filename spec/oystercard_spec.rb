@@ -1,7 +1,8 @@
 require 'oystercard'
 
 describe Oystercard do
-
+    let(:station){ double :station }
+    
   describe "#balance" do 
     it "has a balance of zero" do 
       expect(subject.balance).to eq (0)
@@ -20,15 +21,6 @@ describe Oystercard do
     expect{ subject.top_up 1 }.to raise_error "Maximum balance of #{maximum_balance} exceeded"
     end
   end
-  describe "#deduct" do 
-    it "checks for deduct" do 
-      expect(subject).to respond_to(:deduct).with(1).argument
-    end
-    it "deducts money from balance" do 
-      subject.top_up(20)  
-      expect{subject.deduct 1 }.to change{subject.balance}.by -1
-    end
-  end
   describe "#in journey" do 
       
     context "touch in" do 
@@ -37,21 +29,32 @@ describe Oystercard do
           end
         it "can touch in" do
             subject.top_up(1)
-            subject.touch_in
+            subject.touch_in(station)
             expect(subject).to be_in_journey
             end
           
           it 'raise an error' do
-            expect{ subject.touch_in }.to raise_error "Insufficient balance to touch in"
+            expect{ subject.touch_in(station) }.to raise_error "Insufficient balance to touch in"
+          end
+          it 'stores the entry station' do
+            subject.top_up(1)
+            subject.touch_in(station)
+            expect(subject.entry_station).to eq station
           end
     end
     context "touch out" do 
         it "can touch out" do
             subject.top_up(1)
-            subject.touch_in
+            subject.touch_in(station)
             subject.touch_out
             expect(subject).not_to be_in_journey
-          end
+        end
+        it "charge customer" do 
+            ticket_price = Oystercard::TICKET_PRICE
+            subject.top_up(1)
+            subject.touch_in(station)
+            expect{ subject.touch_out }.to change{ subject.balance }.by(-ticket_price)
+        end
     
     end
    
