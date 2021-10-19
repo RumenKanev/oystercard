@@ -1,5 +1,6 @@
 class Oystercard
     MAXIMUM_BALANCE = 90
+    TICKET_PRICE = 1
     attr_reader :balance, :in_journey
     alias :in_journey? :in_journey
 
@@ -21,6 +22,7 @@ class Oystercard
     end
 
     def touch_in
+        fail "Insufficient balance to touch in"if @balance < TICKET_PRICE
         @in_journey = true
     end
 
