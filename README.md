@@ -2,7 +2,7 @@
 
 ## Weekly challenge user stories
 
-Here are the user stories you will be working on for this project:
+Here are the user stories:
 
 ```
 In order to use public transport
